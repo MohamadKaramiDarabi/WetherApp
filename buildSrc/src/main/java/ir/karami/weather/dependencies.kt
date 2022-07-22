@@ -2,6 +2,7 @@
 
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.project
 import org.gradle.plugin.use.PluginDependenciesSpec
 import org.gradle.plugin.use.PluginDependencySpec
 
@@ -66,10 +67,11 @@ object deps {
     }
 
     object ktor {
-        private const val version = "1.6.7"
+        private const val version = "2.0.3"
         const val clientCore = "io.ktor:ktor-client-core:$version"
-        const val clientAndroid = "io.ktor:ktor-client-android:$version"
-        const val serialization = "io.ktor:ktor-client-serialization:$version"
+        const val clientAndroid = "io.ktor:ktor-client-okhttp:$version"
+        const val negotiation = "io.ktor:ktor-client-content-negotiation:$version"
+        const val serialization = "io.ktor:ktor-serialization-kotlinx-json:$version"
         const val logging = "io.ktor:ktor-client-logging:$version"
     }
 
@@ -86,7 +88,7 @@ object deps {
     }
 
     object daggerHilt {
-        const val version = "2.40.5"
+        const val version = "2.42"
         const val android = "com.google.dagger:hilt-android:$version"
         const val core = "com.google.dagger:hilt-core:$version"
         const val compiler = "com.google.dagger:hilt-compiler:$version"
@@ -152,10 +154,17 @@ inline val PDsS.javaLibrary: PDS get() = id("java-library")
 
 object AppModules {
     const val app = ":app"
+
+    object Data {
+        inline val DependencyHandler.network get() = project(":data:network")
+    }
+    object Repository {
+        inline val DependencyHandler.weather get() = project(":repository:weather")
+    }
 }
 
 
-fun DependencyHandler.implemetationHilt() {
+fun DependencyHandler.implementationHilt() {
     add("implementation", deps.daggerHilt.android)
     add("kapt", deps.daggerHilt.compiler)
 }

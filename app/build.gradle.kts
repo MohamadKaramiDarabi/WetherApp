@@ -1,9 +1,17 @@
+import AppModules.Repository.weather
 import ir.karami.weather.buildsrc.implementationCompose
 
 plugins {
     androidApplication
     kotlinAndroid
     kotlinKapt
+    daggerHiltAndroid
+}
+hilt {
+    enableExperimentalClasspathAggregation = true
+}
+kapt {
+    correctErrorTypes = true
 }
 
 android {
@@ -26,7 +34,7 @@ dependencies {
     implementation(deps.androidx.coreKtx)
     implementation(deps.androidx.appCompat)
     implementation(deps.androidx.material)
-    implementation("androidx.compose.ui:ui-tooling-preview:1.1.1")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.1.1")
     implementationCompose()
+    implementationHilt()
+    implementation(weather)
 }

@@ -5,3 +5,5 @@ fun includeProject(name: String, filePath: String) {
     project(name).projectDir = File(filePath)
 }
 include(":app")
+include(":data:network")
+include(":repository:weather")

@@ -9,6 +9,7 @@ plugins {
 object Versions {
   const val gradleVersion = "7.2.1"
   const val kotlinVersion = "1.6.10"
+  const val hiltVersion = "2.42"
 }
 dependencies {
   implementation("com.android.tools.build:gradle:${Versions.gradleVersion}")

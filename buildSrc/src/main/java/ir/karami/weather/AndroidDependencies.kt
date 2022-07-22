@@ -39,6 +39,7 @@ fun DependencyHandler.implementationKtor() {
     arrayOf(
         deps.ktor.clientAndroid,
         deps.ktor.clientCore,
+        deps.ktor.negotiation,
         deps.ktor.logging,
         deps.ktor.serialization
     ).forEach { add("implementation", it) }

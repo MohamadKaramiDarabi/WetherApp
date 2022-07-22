@@ -2,6 +2,7 @@ import com.android.build.gradle.BaseExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.provideDelegate
 
 typealias AndroidBaseExtension = BaseExtension
 
@@ -17,7 +18,15 @@ fun Project.configureAndroid() = this.extensions.getByType<AndroidBaseExtension>
     testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
   }
   buildTypes {
+
+    val WEATHER_API_KEY: String by project
+    val WEATHER_API_HOST_NAME: String by project
+
     getByName("release") {
+      if (project.name == "network") {
+        buildConfigField("String", "WEATHER_API_KEY", WEATHER_API_KEY)
+        buildConfigField("String", "WEATHER_API_HOST_NAME", WEATHER_API_HOST_NAME)
+      }
       isMinifyEnabled = true
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -26,6 +35,10 @@ fun Project.configureAndroid() = this.extensions.getByType<AndroidBaseExtension>
     }
 
     getByName("debug") {
+      if (project.name == "network") {
+        buildConfigField("String", "WEATHER_API_KEY", WEATHER_API_KEY)
+        buildConfigField("String", "WEATHER_API_HOST_NAME", WEATHER_API_HOST_NAME)
+      }
       if (project.name == "app") {
         applicationIdSuffix = ".debug"
         versionNameSuffix = "-debug"
@@ -78,3 +91,4 @@ fun Project.configureCompose() =
       kotlinCompilerExtensionVersion = deps.compose.version
     }
   }
+
