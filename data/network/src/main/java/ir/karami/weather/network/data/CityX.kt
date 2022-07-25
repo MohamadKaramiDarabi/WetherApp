@@ -1,20 +1,21 @@
 package ir.karami.weather.network.data
 
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class City(
+data class CityX(
+    @SerialName("coord")
+    val coord: Coord? = null,
     @SerialName("country")
     val country: String? = null,
-    @SerialName("lat")
-    val lat: Double? = null,
-    @SerialName("local_names")
-    val localNames: LocalNames? = null,
-    @SerialName("lon")
-    val lon: Double? = null,
+    @SerialName("id")
+    val id: Int? = null,
     @SerialName("name")
     val name: String? = null,
-    @SerialName("state")
-    val state: String? = null
+    @SerialName("population")
+    val population: Int? = null,
+    @SerialName("timezone")
+    val timezone: Int? = null
 )

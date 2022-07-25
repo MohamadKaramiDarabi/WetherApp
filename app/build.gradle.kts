@@ -37,4 +37,6 @@ dependencies {
     implementationCompose()
     implementationHilt()
     implementation(weather)
+    implementation(deps.coil.compose)
+    implementation(deps.accompanist.placeHolder)
 }

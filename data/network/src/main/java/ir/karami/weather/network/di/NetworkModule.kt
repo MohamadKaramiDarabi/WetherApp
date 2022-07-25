@@ -54,6 +54,11 @@ object NetworkObjectModule {
     install(Logging) {
       level = LogLevel.ALL
       AndroidLog.enable()
+      logger = object : Logger {
+        override fun log(message: String) {
+          Log.e("ktor", message)
+        }
+      }
     }
   }
 }

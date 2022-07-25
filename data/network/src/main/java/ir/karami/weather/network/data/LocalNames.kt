@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocalNames(
     @SerialName("en")
-    val en: String,
+    val en: String? = null,
     @SerialName("fa")
-    val fa: String?,
+    val fa: String? = null,
     @SerialName("feature_name")
-    val featureName: String?=null,
+    val featureName: String? = null,
 )
