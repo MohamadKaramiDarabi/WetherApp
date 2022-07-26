@@ -137,6 +137,12 @@ object deps {
     const val leakcanary = "com.squareup.leakcanary:leakcanary-android:2.9.1"
 
     const val sqlitAssetHelper = "com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1"
+
+    object orbit {
+        private const val version = "4.3.2"
+        const val core = "org.orbit-mvi:orbit-core:$version"
+        const val viewModel = "org.orbit-mvi:orbit-viewmodel:$version"
+    }
 }
 
 private typealias PDsS = PluginDependenciesSpec

@@ -6,30 +6,22 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Data(
-//    @SerialName("clouds")
-//    val clouds: Int? = null,
-    @SerialName("deg")
-    val deg: Int? = null,
+    @SerialName("clouds")
+    val clouds: Clouds? = null,
     @SerialName("dt")
     val dt: Int? = null,
-    @SerialName("feels_like")
-    val feelsLike: FeelsLike? = null,
-    @SerialName("gust")
-    val gust: Double? = null,
-    @SerialName("humidity")
-    val humidity: Int? = null,
+    @SerialName("dt_txt")
+    val dtTxt: String? = null,
+    @SerialName("main")
+    val main: Main? = null,
     @SerialName("pop")
-    val pop: Double? = null,
-    @SerialName("pressure")
-    val pressure: Double? = null,
-    @SerialName("speed")
-    val speed: Double? = null,
-    @SerialName("sunrise")
-    val sunrise: Int? = null,
-    @SerialName("sunset")
-    val sunset: Int? = null,
-    @SerialName("temp")
-    val temp: Temp? = null,
+    val pop: Float? = null,
+    @SerialName("sys")
+    val sys: Sys? = null,
+    @SerialName("visibility")
+    val visibility: Int? = null,
     @SerialName("weather")
-    val weather: List<Weather?>? = null
+    val weather: List<Weather?>? = null,
+    @SerialName("wind")
+    val wind: Wind? = null
 )

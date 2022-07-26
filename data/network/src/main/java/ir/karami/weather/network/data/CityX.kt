@@ -16,6 +16,10 @@ data class CityX(
     val name: String? = null,
     @SerialName("population")
     val population: Int? = null,
+    @SerialName("sunrise")
+    val sunrise: Int? = null,
+    @SerialName("sunset")
+    val sunset: Int? = null,
     @SerialName("timezone")
     val timezone: Int? = null
 )

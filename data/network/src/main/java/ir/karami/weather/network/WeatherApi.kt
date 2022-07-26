@@ -1,9 +1,9 @@
 package ir.karami.weather.network
 
 import ir.karami.weather.network.data.City
-import ir.karami.weather.network.data.CityWeatherStatResponse
+import ir.karami.weather.network.data.DailyForecastResponse
 
 interface WeatherApi {
   suspend fun searchCity(cityName: String):  List<City>
-  suspend fun dailyForcaseOfCity(city: City): CityWeatherStatResponse
+  suspend fun dailyForecastOfCity(city: City): DailyForecastResponse
 }

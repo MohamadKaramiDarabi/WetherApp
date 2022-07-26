@@ -15,8 +15,13 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Brightness1
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.Nightlight
+import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,22 +37,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
-import ir.karami.weather.network.data.City
-import ir.karami.weather.network.data.CityWeatherStatResponse
+import ir.karami.weather.screen.main.component.SearchTextInput
+import ir.karami.weather.screen.main.component.WeatherInfo
 import ir.karami.weather.ui.theme.ThemeHelper
+import kotlinx.coroutines.flow.asStateFlow
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun MainScreen(
-  cities: State<List<City>>,
-  dailyWeather: State<CityWeatherStatResponse?>,
-  onSearchClick: (cityName: String) -> Unit,
-  onSelectCity: (city: City) -> Unit
+  mainViewModel: MainViewModel
 ) {
-  val searchValue = remember { mutableStateOf("") }
+  val state by mainViewModel.container.stateFlow.collectAsState()
+
   val hasBackButton = remember { mutableStateOf(false) }
-  val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
   Scaffold(
     modifier = Modifier.fillMaxSize(),
@@ -77,134 +83,98 @@ fun MainScreen(
             .width(0.dp)
             .padding(8.dp)
         ) {
-          val customTextSelectionColors = TextSelectionColors(
-            handleColor = Color.White.copy(0.9f),
-            backgroundColor = Color.White.copy(alpha = 0.4f)
-          )
-
-          CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            OutlinedTextField(
-              value = searchValue.value,
-              onValueChange = {
-                searchValue.value = it
-              },
-              placeholder = {
-                Text(
-                  text = "Search City Name ...",
-                  color = Color.White.copy(alpha = 0.5f)
-                )
-              },
-              shape = RoundedCornerShape(64.dp),
-              leadingIcon = if (hasBackButton.value.not()) {
-                {
-                  IconButton(
-                    onClick = {
-                      hasBackButton.value = hasBackButton.value.not()
-                      focusRequester.requestFocus()
-                    }
-                  ) {
-                    Icon(
-                      imageVector = Icons.Filled.Search,
-                      contentDescription = "Search Icon",
-                      tint = Color.White
-                    )
-                  }
-                }
-              } else null,
-              modifier = Modifier
-                .fillMaxSize()
-                .onFocusChanged {
-                  hasBackButton.value = it.hasFocus
-                }
-                .focusRequester(focusRequester),
-              textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
-              singleLine = true,
-              keyboardActions = KeyboardActions(
-                onSearch = {
-                  onSearchClick.invoke(searchValue.value)
-                  focusManager.clearFocus()
-                }
-              ),
-              keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                autoCorrect = true,
-                capitalization = KeyboardCapitalization.None,
-                imeAction = ImeAction.Search
-              ),
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = Color.White,
-                disabledLabelColor = Color.White.copy(alpha = 0.5f),
-                backgroundColor = Color.White.copy(0.1f),
-                focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.White.copy(0.5f),
-                cursorColor = Color.White,
-                focusedLabelColor = Color.White,
-                leadingIconColor = Color.White,
-                trailingIconColor = Color.White
-              )
-            )
-          }
+          SearchTextInput(
+            hasBackButton = hasBackButton, 
+            focusManager = focusManager, 
+            onSearchButtonClick = {
+            mainViewModel.searchCity(it)
+          })
         }
         IconButton(
           onClick = {
             ThemeHelper.isLightThemeState.tryEmit(ThemeHelper.isLightThemeState.value.not())
           }
         ) {
-          Icon(imageVector = Icons.Filled.Star, contentDescription = "Theme change icon")
+          Icon(imageVector = if(ThemeHelper.isLightThemeState.collectAsState().value) Icons.Outlined.DarkMode else Icons.Outlined.LightMode, contentDescription = "Theme change icon")
         }
       }
     },
     content = {
-      Column(Modifier.fillMaxSize()) {
+      Column(
+        Modifier
+          .fillMaxSize()
+          .background(color = Color.Gray.copy(alpha = 0.05f))) {
         LazyRow(modifier = Modifier.fillMaxWidth()) {
           item { Spacer(modifier = Modifier.size(4.dp)) }
-          items(cities.value) {
-            Box(Modifier.padding(4.dp)) {
-              OutlinedButton(
-                onClick = {
-                  onSelectCity.invoke(it)
-                },
-                shape = RoundedCornerShape(24.dp)
-              ) {
-                Text(
-                  text = it.name ?: "",
-                  color = MaterialTheme.colors.onBackground
+          when (val cityStateList = state.cityListState) {
+            CityListState.Idle -> Unit
+            is CityListState.List -> items(cityStateList.cities) {
+              Box(Modifier.padding(4.dp)) {
+                OutlinedButton(
+                  onClick = {
+                    mainViewModel.getDailyWeather(it)
+                  },
+                  shape = RoundedCornerShape(24.dp)
+                ) {
+                  Text(
+                    text = it.name ?: "",
+                    color = MaterialTheme.colors.onBackground
+                  )
+                }
+              }
+            }
+            CityListState.Loading -> items(4) {
+              Box(modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)) {
+                Box(
+                  modifier = Modifier
+                    .placeholder(
+                      visible = true,
+                      highlight = PlaceholderHighlight.shimmer(),
+                      color = Color.Gray.copy(0.5f),
+                      shape = RoundedCornerShape(24.dp)
+                    )
+                    .width(100.dp)
+                    .height(40.dp)
                 )
               }
             }
           }
           item { Spacer(modifier = Modifier.size(4.dp)) }
         }
-        dailyWeather.value?.let { weather ->
-          LazyColumn {
-            item { Spacer(modifier = Modifier.size(8.dp)) }
-            items(weather.list) {
-              Box(modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()) {
-                Card(
+        state.dailyWeather.let { weather ->
+          when (weather) {
+            is DailyForecastState.DailyForecast -> LazyColumn {
+              item { Spacer(modifier = Modifier.size(8.dp)) }
+              items(weather.dailyForecastResponse.list) {
+                WeatherInfo(data = it)
+              }
+              item { Spacer(modifier = Modifier.size(8.dp)) }
+            }
+            DailyForecastState.Idle -> Unit
+            DailyForecastState.Loading -> LazyColumn {
+              item { Spacer(modifier = Modifier.size(8.dp)) }
+              items(10) {
+                Box(
                   modifier = Modifier
-                    .fillMaxWidth()
                     .padding(8.dp)
+                    .fillMaxWidth()
                 ) {
-                  Column {
-                    Text(text = it.weather?.map { it?.description }.toString())
-
-                    SubcomposeAsyncImage(
-                      model = "http://openweathermap.org/img/wn/${it.weather?.first()?.icon}@2x.png",
-                      contentDescription = null,
-                      modifier = Modifier.size(32.dp),
-                      loading = {
-                        Box(modifier =  Modifier.placeholder(true,Color.Gray))
-                      },
-                    )
-
-                  }
+                  Card(
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .height(64.dp)
+                      .placeholder(
+                        visible = true,
+                        highlight = PlaceholderHighlight.fade(),
+                        color = Color.Gray.copy(0.5f),
+                        shape = RoundedCornerShape(8.dp)
+                      )
+                      .padding(8.dp)
+                  ) {}
                 }
               }
-              
+              item { Spacer(modifier = Modifier.size(8.dp)) }
             }
-            item { Spacer(modifier = Modifier.size(8.dp)) }
           }
         }
       }

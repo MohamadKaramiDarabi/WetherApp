@@ -39,4 +39,6 @@ dependencies {
     implementation(weather)
     implementation(deps.coil.compose)
     implementation(deps.accompanist.placeHolder)
+    implementation(deps.orbit.core)
+    implementation(deps.orbit.viewModel)
 }

@@ -34,7 +34,7 @@ fun WeatherTheme(
   darkTheme: State<Boolean> ,
   content: @Composable () -> Unit
 ) {
-  val colors = if (darkTheme.value) {
+  val colors = if (darkTheme.value.not()) {
     DarkColorPalette
   } else {
     LightColorPalette

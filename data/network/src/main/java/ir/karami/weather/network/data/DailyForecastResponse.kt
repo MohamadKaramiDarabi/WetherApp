@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CityWeatherStatResponse(
+data class DailyForecastResponse(
     @SerialName("city")
     val city: CityX? = CityX(),
     @SerialName("cnt")
@@ -15,5 +15,5 @@ data class CityWeatherStatResponse(
     @SerialName("list")
     val list: List<Data> = listOf(),
     @SerialName("message")
-    val message: Double? = 0.0
+    val message: Int? = 0
 )

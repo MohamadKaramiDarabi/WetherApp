@@ -18,3 +18,13 @@ data class City(
     @SerialName("state")
     val state: String? = null
 )
+
+@Serializable
+data class LocalNames(
+    @SerialName("en")
+    val en: String? = null,
+    @SerialName("fa")
+    val fa: String? = null,
+    @SerialName("feature_name")
+    val featureName: String? = null,
+)

@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(private val weatherApi: WeatherApi) {
   fun searchCityByName(cityName: String) = flow {
+    if(cityName.isEmpty()) throw Throwable("empty city name")
     emit(weatherApi.searchCity(cityName))
   }.catch {
     it.printStackTrace()
@@ -15,7 +16,7 @@ class WeatherRepository @Inject constructor(private val weatherApi: WeatherApi) 
 
   fun cityDairyForecast(city: City?) = flow {
     if (city==null) throw NullPointerException()
-    emit(weatherApi.dailyForcaseOfCity(city))
+    emit(weatherApi.dailyForecastOfCity(city))
   }.catch {
     it.printStackTrace()
   }
